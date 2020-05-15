@@ -1,2 +1,3 @@
 rootProject.name='AndroidWebviewCommon'
 include ':app'
+include ':commonweblib'

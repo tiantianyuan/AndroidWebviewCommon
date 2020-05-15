@@ -1,4 +1,4 @@
-package com.makepolo.androidwebviewcommon
+package com.marcopolos.androidwebviewcommon
 
 import org.junit.Test
 
