@@ -15,6 +15,6 @@ allprojects {
 ### Step 2. Add the dependency
 ```gardle
 dependencies {
-	        implementation 'com.github.tiantianyuan:AndroidWebviewCommon:v1.0'
+	        implementation 'com.github.tiantianyuan:AndroidWebviewCommon:v1.1'
 	}
   ```
