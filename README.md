@@ -1,7 +1,7 @@
 # AndroidWebviewCommon
 AndroidWebviewCommon是对Android的webview的自定义封装。
 # Documentation
-[AndroidWebviewCommon wiki](https://github.com/tiantianyuan/AndroidWebviewCommon/new/master?readme=1)
+[AndroidWebviewCommon wiki](https://github.com/tiantianyuan/AndroidWebviewCommon/wiki)
 # use AndroidWebviewCommon
 ### Step 1. Add the JitPack repository to your build file
 ```gradle 
