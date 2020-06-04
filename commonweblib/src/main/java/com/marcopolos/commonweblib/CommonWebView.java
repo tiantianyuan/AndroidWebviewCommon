@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static com.marcopolos.commonweblib.CommonWebViewConfig.CONCISE;
 import static com.marcopolos.commonweblib.CommonWebViewConfig.FULL_SCREEN;
-import static com.marcopolos.commonweblib.CommonWebViewConfig.ONLY_CLOSE;
-import static com.marcopolos.commonweblib.CommonWebViewConfig.TOP;
-import static com.marcopolos.commonweblib.CommonWebViewConfig.TOP_BOTTOM;
+import static com.marcopolos.commonweblib.CommonWebViewConfig.MODERN;
+import static com.marcopolos.commonweblib.CommonWebViewConfig.TRADITIONAL;
 
 public class CommonWebView extends ConstraintLayout implements View.OnClickListener {
 
@@ -238,17 +238,17 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
      */
     public void setStyle(int style) {
         switch (style) {
-            case TOP_BOTTOM:
+            case TRADITIONAL:
                 mClHeader.setVisibility(VISIBLE);
                 mLlFooter.setVisibility(VISIBLE);
                 mIvTransparentClose.setVisibility(GONE);
                 break;
-            case TOP:
+            case MODERN:
                 mClHeader.setVisibility(VISIBLE);
                 mLlFooter.setVisibility(GONE);
                 mIvTransparentClose.setVisibility(GONE);
                 break;
-            case ONLY_CLOSE:
+            case CONCISE:
                 mClHeader.setVisibility(GONE);
                 mLlFooter.setVisibility(GONE);
                 mIvTransparentClose.setVisibility(VISIBLE);

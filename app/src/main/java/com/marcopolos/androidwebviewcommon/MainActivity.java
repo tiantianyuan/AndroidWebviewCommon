@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import static com.marcopolos.commonweblib.CommonWebViewConfig.TOP_BOTTOM;
+import static com.marcopolos.commonweblib.CommonWebViewConfig.TRADITIONAL;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         //webview的初始化
         commonWebView.initCommonWebView();
         //设置webview的显示的样式
-        commonWebView.setStyle(TOP_BOTTOM);
+        commonWebView.setStyle(TRADITIONAL);
         //设置图标的颜色
         commonWebView.setTintColor(Color.BLUE);
         //设置title的颜色
