@@ -3,6 +3,7 @@ package com.marcopolos.commonweblib;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -49,6 +50,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private boolean mHasEvaluateJs = false;
     private String mScript;
     private ValueCallback<String> mResultCallback;
+    private int mViewStyle;
 
     public CommonWebView(Context context) {
         super(context);
@@ -71,6 +73,10 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mLlForward = findViewById(R.id.ll_forward);
         mCommonWebView = findViewById(R.id.common_web_view);
         mProgressBar = findViewById(R.id.progress_circular);
+        TypedArray ta = context.obtainStyledAttributes(attrs,
+                R.styleable.MyView);
+        mViewStyle = ta.getInteger(R.styleable.MyView_view_style,1);
+        setStyle(mViewStyle);
         initClick();
         Log.d("CommonWebView", "context:" + context);
     }

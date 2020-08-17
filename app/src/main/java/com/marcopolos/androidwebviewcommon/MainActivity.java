@@ -28,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        commonWebView = findViewById(R.id.common_webview);
+        CommonWebView commonWebView = findViewById(R.id.common_webview);
         //webview的初始化
         commonWebView.initCommonWebView();
         //设置webview的显示的样式
-        commonWebView.setStyle(TRADITIONAL);
+       // commonWebView.setStyle(FULL_SCREEN);
         //设置图标的颜色
         commonWebView.setTintColor(Color.BLUE);
         //设置title的颜色
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //设置title标题
         commonWebView.setTitleText("CommonWebView");
         //设置加载的网页地址
-        commonWebView.loadUrl("http://192.168.2.234:8081/#/");
+        commonWebView.loadUrl("http://192.168.2.234:8080");
         //webView拦截到URLScheme执行指定的方法
         mUrlSchemeFucMap.clear();
         mUrlSchemeFucMap.put("otb", new Callable() {
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         commonWebView.setUrlSchemeFucMap(mUrlSchemeFucMap);
         //userAgent的设定
         commonWebView.setUserAgent("Android");
+        //cookie的设定
         ArrayList<String> cookieList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             cookieList.add("APP_ID=2");

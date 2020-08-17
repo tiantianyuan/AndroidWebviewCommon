@@ -10,6 +10,7 @@
     <com.marcopolos.commonweblib.CommonWebView
         android:id="@+id/common_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:view_style="4"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

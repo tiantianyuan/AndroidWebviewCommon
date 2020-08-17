@@ -13,7 +13,7 @@ allprojects {
 	}
   ```
 ### Step 2. Add the dependency
-```gardle
+```gradle
 dependencies {
 	        implementation 'com.github.tiantianyuan:AndroidWebviewCommon:v1.1'
 	}
