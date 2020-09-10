@@ -15,6 +15,6 @@ allprojects {
 ### Step 2. Add the dependency
 ```gradle
 dependencies {
-	        implementation 'com.github.tiantianyuan:AndroidWebviewCommon:v1.1'
+	        implementation 'com.github.tiantianyuan:AndroidWebviewCommon:v1.2.2'
 	}
   ```

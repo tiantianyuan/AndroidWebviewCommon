@@ -13,6 +13,8 @@ import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -75,7 +77,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mProgressBar = findViewById(R.id.progress_circular);
         TypedArray ta = context.obtainStyledAttributes(attrs,
                 R.styleable.MyView);
-        mViewStyle = ta.getInteger(R.styleable.MyView_view_style,1);
+        mViewStyle = ta.getInteger(R.styleable.MyView_view_style, 1);
         setStyle(mViewStyle);
         initClick();
         Log.d("CommonWebView", "context:" + context);
@@ -161,6 +163,20 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 */
             return super.onConsoleMessage(consoleMessage);
         }
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            Log.d("CommonWWebChromeClient", "result:" + result);
+            return super.onJsAlert(view, url, message, result);
+
+        }
+
+        @Override
+        public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+            Log.d("CommonWWebChromeClient", "result:" + result);
+            return super.onJsPrompt(view, url, message, defaultValue, result);
+        }
+
     }
 
 
@@ -230,6 +246,10 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 
     public void loadUrl(String url) {
         mCommonWebView.loadUrl(url);
+    }
+
+    public void loadUrl(String url, Map<String, String> additionalHttpHeaders) {
+        mCommonWebView.loadUrl(url, additionalHttpHeaders);
     }
 
 

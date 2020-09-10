@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //设置title标题
         commonWebView.setTitleText("CommonWebView");
         //设置加载的网页地址
-        commonWebView.loadUrl("http://192.168.2.234:8080");
+        commonWebView.loadUrl("http://192.168.2.234:8081");
         //webView拦截到URLScheme执行指定的方法
         mUrlSchemeFucMap.clear();
         mUrlSchemeFucMap.put("otb", new Callable() {
