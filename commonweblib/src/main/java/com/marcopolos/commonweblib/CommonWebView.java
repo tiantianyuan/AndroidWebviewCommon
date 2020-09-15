@@ -1,11 +1,16 @@
 package com.marcopolos.commonweblib;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,10 +28,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.FileProvider;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.list.DialogListExtKt;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -53,6 +68,12 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private String mScript;
     private ValueCallback<String> mResultCallback;
     private int mViewStyle;
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private String mCameraPhotoPath;
+    public static final int CAMERA_FILE_REQUEST_CODE = 1;
+    public static final int GALLERY_FILE_REQUEST_CODE = 2;
+    public static final int REQUEST_PERMISSION_FOR_CAMERA = 3;
+    public static final int REQUEST_PERMISSION_FOR_GALLERY = 4;
 
     public CommonWebView(Context context) {
         super(context);
@@ -95,6 +116,42 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         initWebSettings(mWebSettings);
         mCommonWebView.setWebViewClient(new CommonWebViewClient());
         mCommonWebView.setWebChromeClient(new CommonWWebChromeClient());
+    }
+
+    public void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(mContext,
+                        "com.marcopolos.androidwebviewcommon.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                ((Activity) mContext).startActivityForResult(takePictureIntent, CAMERA_FILE_REQUEST_CODE);
+            }
+        }
+    }
+
+    public void pickImage() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/jpeg");
+        }
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        ((Activity) mContext).startActivityForResult(intent, GALLERY_FILE_REQUEST_CODE);
     }
 
     private class CommonWebViewClient extends android.webkit.WebViewClient {
@@ -177,8 +234,65 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             return super.onJsPrompt(view, url, message, defaultValue, result);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+            // Double check that we don't have any existing callbacks
+            if (mFilePathCallback != null) {
+                mFilePathCallback.onReceiveValue(null);
+            }
+            mFilePathCallback = filePathCallback;
+
+            MaterialDialog dialog = new MaterialDialog(mContext, MaterialDialog.getDEFAULT_BEHAVIOR());
+            ArrayList<String> mList = new ArrayList<>();
+            mList.add("拍照");
+            mList.add("相册");
+            DialogListExtKt.listItems(dialog, null, mList, null, false, (materialDialog, index, text) -> {
+                Toast.makeText(mContext, "Selected item  " + text + " at index " + index, Toast.LENGTH_SHORT).show();
+                if (index == 0) {
+                    if (hasSelfPermission((Activity) mContext, Manifest.permission.CAMERA)
+                            && hasSelfPermission((Activity) mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            && hasSelfPermission((Activity) mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ) {
+                        dispatchTakePictureIntent();
+                    } else {
+                        ((Activity) mContext).requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_FOR_CAMERA);
+                    }
+                } else if (index == 1) {
+                    // 「ライブラリから選ぶ」を選択
+                    if (hasSelfPermission((Activity) mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            && hasSelfPermission((Activity) mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ) {
+                        pickImage();
+                    } else {
+                        ((Activity) mContext).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_FOR_GALLERY);
+                    }
+                }
+                return null;
+            }).cancelOnTouchOutside(false).setOnCancelListener(dialog1 -> {
+                if (mFilePathCallback != null) {
+                    mFilePathCallback.onReceiveValue(null);
+                    mFilePathCallback = null;
+                }
+            });
+
+            dialog.show();
+            return true;
+        }
     }
 
+    public ValueCallback<Uri[]> getFilePathCallback() {
+        return mFilePathCallback;
+    }
+
+    public void setFilePathCallbackNull() {
+        mFilePathCallback = null;
+    }
+
+
+    public String getCameraPhotoPath() {
+        return mCameraPhotoPath;
+    }
 
     //webSetting 初始化
     private void initWebSettings(WebSettings mWebSettings) {
@@ -389,5 +503,30 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         if (mContext instanceof Activity) {
             ((Activity) mContext).finish();
         }
+    }
+
+    //拍照获取文件的创建
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCameraPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    @SuppressLint("NewApi")
+    public static boolean hasSelfPermission(Activity activity, String permission) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 }
