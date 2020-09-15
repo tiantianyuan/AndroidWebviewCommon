@@ -132,7 +132,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(mContext,
-                        "com.marcopolos.androidwebviewcommon.fileprovider",
+                        "com.marcopolos.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 ((Activity) mContext).startActivityForResult(takePictureIntent, CAMERA_FILE_REQUEST_CODE);
@@ -248,7 +248,6 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             mList.add("拍照");
             mList.add("相册");
             DialogListExtKt.listItems(dialog, null, mList, null, false, (materialDialog, index, text) -> {
-                Toast.makeText(mContext, "Selected item  " + text + " at index " + index, Toast.LENGTH_SHORT).show();
                 if (index == 0) {
                     if (hasSelfPermission((Activity) mContext, Manifest.permission.CAMERA)
                             && hasSelfPermission((Activity) mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
