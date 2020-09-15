@@ -132,7 +132,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(mContext,
-                        "com.marcopolos.fileprovider",
+                        mContext.getPackageName() + ".fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 ((Activity) mContext).startActivityForResult(takePictureIntent, CAMERA_FILE_REQUEST_CODE);
