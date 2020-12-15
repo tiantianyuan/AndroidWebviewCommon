@@ -77,9 +77,23 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     public static final int REQUEST_PERMISSION_FOR_CAMERA = 3;
     public static final int REQUEST_PERMISSION_FOR_GALLERY = 4;
     private MaterialDialog dialog;
+    private boolean isShowLoading = true;
+    private boolean isLoadingComplete = false;
 
     public CommonWebView(Context context) {
         super(context);
+    }
+
+    public boolean isShowLoading() {
+        return isShowLoading;
+    }
+
+    public void setShowLoading(boolean showLoading) {
+        isShowLoading = showLoading;
+    }
+
+    public boolean isLoadingComplete() {
+        return isLoadingComplete;
     }
 
     public CommonWebView(Context context, AttributeSet attrs) {
@@ -203,9 +217,14 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                     mHasEvaluateJs = false;
                     mCommonWebView.evaluateJavascript(mScript, mResultCallback);
                 }
-                dissmissLoading();
+                isLoadingComplete = true;
+                if (isShowLoading()) {
+                    dissmissLoading();
+                }
             } else {
-                showLoading();
+                if (isShowLoading()) {
+                    showLoading();
+                }
             }
         }
 
