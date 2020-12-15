@@ -20,6 +20,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -35,6 +36,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.customview.DialogCustomViewExtKt;
 import com.afollestad.materialdialogs.list.DialogListExtKt;
 
 import java.io.File;
@@ -74,6 +76,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     public static final int GALLERY_FILE_REQUEST_CODE = 2;
     public static final int REQUEST_PERMISSION_FOR_CAMERA = 3;
     public static final int REQUEST_PERMISSION_FOR_GALLERY = 4;
+    private MaterialDialog dialog;
 
     public CommonWebView(Context context) {
         super(context);
@@ -95,7 +98,8 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mLlBack = findViewById(R.id.ll_back);
         mLlForward = findViewById(R.id.ll_forward);
         mCommonWebView = findViewById(R.id.common_web_view);
-        mProgressBar = findViewById(R.id.progress_circular);
+        dialog = new MaterialDialog(mContext, MaterialDialog.getDEFAULT_BEHAVIOR());
+        DialogCustomViewExtKt.customView(dialog, R.layout.layout_loading_view, null, false, true, false, false).cancelable(true).cancelOnTouchOutside(false);
         TypedArray ta = context.obtainStyledAttributes(attrs,
                 R.styleable.MyView);
         mViewStyle = ta.getInteger(R.styleable.MyView_view_style, 1);
@@ -116,6 +120,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         initWebSettings(mWebSettings);
         mCommonWebView.setWebViewClient(new CommonWebViewClient());
         mCommonWebView.setWebChromeClient(new CommonWWebChromeClient());
+        Log.d("CommonWebView", "mCommonWebView:" + mCommonWebView.getSettings().getUserAgentString());
     }
 
     public void dispatchTakePictureIntent() {
@@ -198,9 +203,9 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                     mHasEvaluateJs = false;
                     mCommonWebView.evaluateJavascript(mScript, mResultCallback);
                 }
-                mProgressBar.setVisibility(GONE);
+                dissmissLoading();
             } else {
-                mProgressBar.setVisibility(VISIBLE);
+                showLoading();
             }
         }
 
@@ -277,6 +282,12 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 
             dialog.show();
             return true;
+        }
+
+        @Override
+        public void onPermissionRequest(PermissionRequest request) {
+            super.onPermissionRequest(request);
+            Log.d("CommonWWebChromeClient", "request:" + request);
         }
     }
 
@@ -527,5 +538,14 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             return true;
         }
         return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+
+    private void showLoading() {
+        dialog.show();
+    }
+
+    private void dissmissLoading() {
+        dialog.dismiss();
     }
 }
