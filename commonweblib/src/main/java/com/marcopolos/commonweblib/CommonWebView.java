@@ -23,11 +23,15 @@ import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,7 @@ import androidx.core.content.FileProvider;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.customview.DialogCustomViewExtKt;
 import com.afollestad.materialdialogs.list.DialogListExtKt;
+import com.airbnb.lottie.LottieAnimationView;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,10 +62,12 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 
     private ConstraintLayout mClHeader;
     private ImageView mIvTopLeft, mIvTopRight, mIvTransparentClose, mIvBack, mIvForward;
-    private TextView mTvTitle;
+    private TextView mTvTitle, mTvLoadingTitle;
     private LinearLayout mLlFooter, mLlBack, mLlForward;
-    private ProgressBar mProgressBar;
     private WebView mCommonWebView;
+    private LottieAnimationView lottieAnimationView;
+    private RelativeLayout rlLoadingBack;
+    private ImageView ivLoadingBack;
     private WebSettings mWebSettings;
     private String mTitleText = "";
     private Activity mActivity;
@@ -79,6 +86,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private MaterialDialog dialog;
     private boolean isShowLoading = true;
     private boolean isLoadingComplete = false;
+    private boolean isShowNativeBack = false;
 
     public CommonWebView(Context context) {
         super(context);
@@ -94,6 +102,10 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 
     public boolean isLoadingComplete() {
         return isLoadingComplete;
+    }
+
+    public void setShowNativeBack(boolean showNativeBack) {
+        isShowNativeBack = showNativeBack;
     }
 
     public CommonWebView(Context context, AttributeSet attrs) {
@@ -112,6 +124,10 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mLlBack = findViewById(R.id.ll_back);
         mLlForward = findViewById(R.id.ll_forward);
         mCommonWebView = findViewById(R.id.common_web_view);
+        lottieAnimationView = findViewById(R.id.progress_view);
+        rlLoadingBack = findViewById(R.id.rl_loading_back);
+        mTvLoadingTitle = findViewById(R.id.tv_loading_status);
+        ivLoadingBack = findViewById(R.id.iv_loading_back);
         dialog = new MaterialDialog(mContext, MaterialDialog.getDEFAULT_BEHAVIOR());
         DialogCustomViewExtKt.customView(dialog, R.layout.layout_loading_view, null, false, true, false, false).cancelable(true).cancelOnTouchOutside(false);
         TypedArray ta = context.obtainStyledAttributes(attrs,
@@ -128,6 +144,12 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mIvTransparentClose.setOnClickListener(this);
         mLlBack.setOnClickListener(this);
         mLlForward.setOnClickListener(this);
+        ivLoadingBack.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishPage();
+            }
+        });
     }
 
     public void initCommonWebView() {
@@ -191,6 +213,12 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
             }
             return super.shouldOverrideUrlLoading(view, url);
         }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            super.onReceivedError(view, request, error);
+            mTvLoadingTitle.setText("読み込みに失敗しました。");
+        }
     }
 
     private class CommonWWebChromeClient extends WebChromeClient {
@@ -221,9 +249,13 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                 if (isShowLoading()) {
                     dissmissLoading();
                 }
+                rlLoadingBack.setVisibility(GONE);
             } else {
                 if (isShowLoading()) {
                     showLoading();
+                }
+                if (isShowNativeBack){
+                    rlLoadingBack.setVisibility(VISIBLE);
                 }
             }
         }
@@ -559,12 +591,22 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
+    private void finishPage() {
+        //dialog.show();
+        if (mContext instanceof Activity) {
+            ((Activity) mContext).finish();
+        }
+    }
+
 
     private void showLoading() {
-        dialog.show();
+        //dialog.show();
+        lottieAnimationView.setVisibility(View.VISIBLE);
+        lottieAnimationView.playAnimation();
     }
 
     private void dissmissLoading() {
-        dialog.dismiss();
+        //dialog.dismiss();
+        lottieAnimationView.setVisibility(View.GONE);
     }
 }
