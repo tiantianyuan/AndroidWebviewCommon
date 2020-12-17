@@ -246,15 +246,13 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                     mCommonWebView.evaluateJavascript(mScript, mResultCallback);
                 }
                 isLoadingComplete = true;
-                if (isShowLoading()) {
-                    dissmissLoading();
-                }
+                dissmissLoading();
                 rlLoadingBack.setVisibility(GONE);
             } else {
                 if (isShowLoading()) {
                     showLoading();
                 }
-                if (isShowNativeBack){
+                if (isShowNativeBack) {
                     rlLoadingBack.setVisibility(VISIBLE);
                 }
             }
