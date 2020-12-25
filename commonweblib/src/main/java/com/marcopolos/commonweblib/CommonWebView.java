@@ -497,6 +497,15 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     }
 
     /**
+     * 获取webview的实例
+     *
+     * @param userAgent
+     */
+    public WebView getWebview() {
+            return mCommonWebView;
+    }
+
+    /**
      * cookie的设定
      *
      * @param context
