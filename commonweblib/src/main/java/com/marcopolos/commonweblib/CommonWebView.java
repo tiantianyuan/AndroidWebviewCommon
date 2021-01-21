@@ -70,6 +70,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private ImageView ivLoadingBack;
     private WebSettings mWebSettings;
     private String mTitleText = "";
+    private boolean mIsFragment = false;
     private Activity mActivity;
     private Context mContext;
     private Map<String, Callable> mUrlSchemeFucMap = new HashMap<>();
@@ -486,6 +487,11 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         mTitleText = titleText;
     }
 
+    public void setIsFragment(boolean isFragment) {
+        mIsFragment = isFragment;
+    }
+
+
     /**
      * userAgent的设置
      *
@@ -502,7 +508,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
      * @param userAgent
      */
     public WebView getWebview() {
-            return mCommonWebView;
+        return mCommonWebView;
     }
 
     /**
@@ -601,7 +607,11 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private void finishPage() {
         //dialog.show();
         if (mContext instanceof Activity) {
-            ((Activity) mContext).finish();
+            if (mIsFragment) {
+                mCommonWebView.goBack();
+            } else {
+                ((Activity) mContext).finish();
+            }
         }
     }
 
