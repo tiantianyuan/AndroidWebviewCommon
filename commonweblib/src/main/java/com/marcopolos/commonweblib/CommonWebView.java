@@ -88,6 +88,8 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private boolean isShowLoading = true;
     private boolean isLoadingComplete = false;
     private boolean isShowNativeBack = false;
+    private boolean isAlwaysShowNativeTop = false;
+    private String nativeTitle = "";
 
     public CommonWebView(Context context) {
         super(context);
@@ -107,6 +109,15 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
 
     public void setShowNativeBack(boolean showNativeBack) {
         isShowNativeBack = showNativeBack;
+    }
+
+
+    public boolean isAlwaysShowNativeTop() {
+        return isAlwaysShowNativeTop;
+    }
+
+    public void setAlwaysShowNativeTop(boolean alwaysShowNativeTop) {
+        isAlwaysShowNativeTop = alwaysShowNativeTop;
     }
 
     public CommonWebView(Context context, AttributeSet attrs) {
@@ -235,6 +246,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                     mTvTitle.setText("");
                 }
             }
+            nativeTitle = title;
         }
 
         @Override
@@ -248,7 +260,11 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                 }
                 isLoadingComplete = true;
                 dissmissLoading();
-                rlLoadingBack.setVisibility(GONE);
+                if (isAlwaysShowNativeTop()){
+                    mTvLoadingTitle.setText(nativeTitle);
+                }else {
+                    rlLoadingBack.setVisibility(GONE);
+                }
             } else {
                 if (isShowLoading()) {
                     showLoading();
