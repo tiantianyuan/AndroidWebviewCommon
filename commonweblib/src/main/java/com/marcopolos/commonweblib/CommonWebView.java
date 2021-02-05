@@ -90,6 +90,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
     private boolean isShowNativeBack = false;
     private boolean isAlwaysShowNativeTop = false;
     private String nativeTitle = "";
+    private String errorTitle = "";
 
     public CommonWebView(Context context) {
         super(context);
@@ -229,7 +230,18 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
-            mTvLoadingTitle.setText("読み込みに失敗しました。");
+            errorTitle = "読み込みに失敗しました";
+            view.loadUrl("file:///android_asset/error.html");
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            if (!errorTitle.isEmpty()) {
+                mTvLoadingTitle.setText(errorTitle);
+            } else {
+                mTvLoadingTitle.setText(nativeTitle);
+            }
         }
     }
 
@@ -246,6 +258,7 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                     mTvTitle.setText("");
                 }
             }
+
             nativeTitle = title;
         }
 
@@ -260,9 +273,9 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
                 }
                 isLoadingComplete = true;
                 dissmissLoading();
-                if (isAlwaysShowNativeTop()){
-                    mTvLoadingTitle.setText(nativeTitle);
-                }else {
+                if (isAlwaysShowNativeTop()) {
+                    //mTvLoadingTitle.setText(nativeTitle);
+                } else {
                     rlLoadingBack.setVisibility(GONE);
                 }
             } else {
