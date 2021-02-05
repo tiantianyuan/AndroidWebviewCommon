@@ -121,6 +121,14 @@ public class CommonWebView extends ConstraintLayout implements View.OnClickListe
         isAlwaysShowNativeTop = alwaysShowNativeTop;
     }
 
+    public String getErrorTitle() {
+        return errorTitle;
+    }
+
+    public void setErrorTitle(String errorTitle) {
+        this.errorTitle = errorTitle;
+    }
+
     public CommonWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
